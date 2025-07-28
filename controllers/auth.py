@@ -1,4 +1,3 @@
-# zoho_api/controllers/auth.py
 from odoo import http
 from odoo.http import request
 import requests
