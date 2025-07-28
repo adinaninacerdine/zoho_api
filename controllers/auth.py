@@ -113,33 +113,48 @@ class ZohoAuth(http.Controller):
             
             tokens = response.json()
             refresh_token = tokens.get('refresh_token')
+            access_token = tokens.get('access_token')
             
+            # Sauvegarder le refresh token s'il est présent (première auth)
             if refresh_token:
                 ICP.set_param('zoho.refresh_token', refresh_token)
-                return """
-                <html>
-                    <body style="font-family: Arial; padding: 50px; text-align: center;">
-                        <h2>✅ Authentification réussie!</h2>
-                        <p>Le refresh token a été sauvegardé.</p>
-                        <p>Vous pouvez maintenant utiliser l'intégration Zoho.</p>
-                        <br>
-                        <a href="/web" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
-                            Retourner à Odoo
-                        </a>
-                    </body>
-                </html>
-                """
+                message = "Le refresh token a été sauvegardé."
             else:
-                return f"""
-                <html>
-                    <body style="font-family: Arial; padding: 50px;">
-                        <h2>❌ Erreur</h2>
-                        <p>Pas de refresh token dans la réponse</p>
-                        <pre>{tokens}</pre>
-                        <a href="/web">Retour à Odoo</a>
-                    </body>
-                </html>
-                """
+                # Vérifier si on a déjà un refresh token existant
+                existing_refresh_token = ICP.get_param('zoho.refresh_token')
+                if existing_refresh_token:
+                    message = "Refresh token existant confirmé. Authentification réussie."
+                else:
+                    return f"""
+                    <html>
+                        <body style="font-family: Arial; padding: 50px;">
+                            <h2>❌ Erreur</h2>
+                            <p>Pas de refresh token et aucun token existant.</p>
+                            <p>Essayez de révoquer l'accès dans votre compte Zoho puis recommencez.</p>
+                            <pre>{tokens}</pre>
+                            <a href="/web">Retour à Odoo</a>
+                        </body>
+                    </html>
+                    """
+            
+            # Optionnel : sauvegarder l'access token temporaire
+            if access_token:
+                ICP.set_param('zoho.access_token', access_token)
+                ICP.set_param('zoho.access_token_expires', str(tokens.get('expires_in', 3600)))
+            
+            return f"""
+            <html>
+                <body style="font-family: Arial; padding: 50px; text-align: center;">
+                    <h2>✅ Authentification réussie!</h2>
+                    <p>{message}</p>
+                    <p>Vous pouvez maintenant utiliser l'intégration Zoho.</p>
+                    <br>
+                    <a href="/web" style="padding: 10px 20px; background: #007bff; color: white; text-decoration: none; border-radius: 5px;">
+                        Retourner à Odoo
+                    </a>
+                </body>
+            </html>
+            """
                 
         except Exception as e:
             _logger.error(f"Erreur callback: {e}")
