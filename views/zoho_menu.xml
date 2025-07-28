@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Action pour lancer l'auth -->
+    <!-- Action pour lancer l'auth avec la bonne URL -->
     <record id="action_zoho_auth" model="ir.actions.act_url">
         <field name="name">S'authentifier avec Zoho</field>
-        <field name="url">/auth/zoho</field>
+        <field name="url">/zoho/auth/start</field>
         <field name="target">new</field>
     </record>
     
