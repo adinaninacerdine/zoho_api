@@ -11,6 +11,26 @@
                         <field name="zoho_folder_id" readonly="1"/>
                         <field name="zoho_cliq_channel"/>
                     </group>
+                    <group>
+                        <button name="action_create_zoho_folder" 
+                                type="object" 
+                                string="Créer Dossier WorkDrive"
+                                class="btn-primary"
+                                attrs="{'invisible': [('zoho_folder_id', '!=', False)]}"/>
+                        
+                        <button name="action_get_my_folder_link" 
+                                type="object" 
+                                string="Mon Dossier Personnel"
+                                class="btn-secondary"
+                                attrs="{'invisible': [('zoho_folder_id', '=', False)]}"/>
+                    </group>
+                    
+                    <div attrs="{'invisible': [('zoho_folder_id', '=', False)]}">
+                        <separator string="Structure des dossiers"/>
+                        <p>📁 <strong>Dossier principal :</strong> <field name="name" readonly="1" nolabel="1"/></p>
+                        <p>👤 <strong>Votre dossier :</strong> Accessible via le bouton "Mon Dossier Personnel"</p>
+                        <p><em>Chaque utilisateur du projet aura son propre sous-dossier pour ses fichiers privés.</em></p>
+                    </div>
                 </page>
             </notebook>
         </field>
