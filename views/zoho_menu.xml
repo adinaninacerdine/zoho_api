@@ -1,0 +1,21 @@
+# zoho_api/views/zoho_menu.xml
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Action pour lancer l'auth -->
+    <record id="action_zoho_auth" model="ir.actions.act_url">
+        <field name="name">S'authentifier avec Zoho</field>
+        <field name="url">/auth/zoho</field>
+        <field name="target">new</field>
+    </record>
+    
+    <menuitem id="menu_zoho_root"
+              name="Zoho Integration"
+              web_icon="zoho_api,static/description/icon.png"
+              sequence="100"/>
+    
+    <menuitem id="menu_zoho_auth"
+              name="Authentification"
+              parent="menu_zoho_root"
+              action="action_zoho_auth"
+              sequence="10"/>
+</odoo>
