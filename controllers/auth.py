@@ -47,7 +47,22 @@ class ZohoAuth(http.Controller):
         
         _logger.info("Redirecting to Zoho OAuth: %s", auth_url)
         
-        return request.redirect(auth_url)
+        # Utiliser redirection JavaScript au lieu de HTTP redirect
+        return f"""
+        <html>
+            <head>
+                <title>Redirection vers Zoho...</title>
+            </head>
+            <body style="font-family: Arial; padding: 50px; text-align: center;">
+                <h2>🔄 Redirection vers Zoho...</h2>
+                <p>Vous allez être redirigé vers Zoho pour l'authentification.</p>
+                <p>Si la redirection ne fonctionne pas, <a href="{auth_url}">cliquez ici</a></p>
+                <script>
+                    window.location.href = "{auth_url}";
+                </script>
+            </body>
+        </html>
+        """
     
     @http.route(['/zoho/auth/callback', '/auth/zoho/callback'], type='http', auth='public', methods=['GET', 'POST'])
     def auth_callback(self, **kw):
