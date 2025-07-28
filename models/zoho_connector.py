@@ -44,22 +44,47 @@ class ZohoConnector(models.Model):
     def get_workspaces(self):
         """Récupère les workspaces WorkDrive"""
         token = self.get_access_token()
-        base_url = self.env['ir.config_parameter'].sudo().get_param('zoho.workdrive_base_url')
+        domain = self.env['ir.config_parameter'].sudo().get_param('zoho.domain', 'com')
+        
+        # URL correcte selon la région
+        if domain == 'eu':
+            base_url = 'https://www.zohoapis.eu'
+        elif domain == 'in':
+            base_url = 'https://www.zohoapis.in'
+        else:
+            base_url = 'https://www.zohoapis.com'
         
         headers = {'Authorization': f'Zoho-oauthtoken {token}'}
         
         try:
-            response = requests.get(f"{base_url}/workdrive/api/v1/ws", headers=headers)
+            url = f"{base_url}/workdrive/api/v1/ws"
+            _logger.info(f"Calling WorkDrive API: {url}")
+            _logger.info(f"Headers: {headers}")
+            
+            response = requests.get(url, headers=headers)
+            
+            _logger.info(f"Response status: {response.status_code}")
+            _logger.info(f"Response body: {response.text}")
+            
             response.raise_for_status()
             return response.json().get('data', [])
         except Exception as e:
             _logger.error(f"Erreur workspaces: {e}")
+            _logger.error(f"Response content: {getattr(response, 'text', 'No response')}")
             raise UserError(_("Erreur récupération workspaces: %s") % str(e))
     
     def create_folder(self, name, parent_id=None):
         """Crée un dossier dans WorkDrive"""
         token = self.get_access_token()
-        base_url = self.env['ir.config_parameter'].sudo().get_param('zoho.workdrive_base_url')
+        domain = self.env['ir.config_parameter'].sudo().get_param('zoho.domain', 'com')
+        
+        # URL correcte selon la région
+        if domain == 'eu':
+            base_url = 'https://www.zohoapis.eu'
+        elif domain == 'in':
+            base_url = 'https://www.zohoapis.in'
+        else:
+            base_url = 'https://www.zohoapis.com'
         
         # Récupérer workspace_id si pas défini
         if not self.workspace_id:
